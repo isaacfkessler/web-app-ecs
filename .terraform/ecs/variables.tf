@@ -24,18 +24,6 @@ variable "target_group_arn" {
   description = "Load balancer target group arn"
 }
 
-variable "container_definitions" {
-  type = list(object({
-    name           = string
-    image          = string
-    cpu            = number
-    memory         = number
-    environment    = map(string)
-    secrets        = map(string)
-    container_port = number
-  }))
-  description = "List of container definition assigned to ecs task"
-}
 
 variable "vpc_id" {
   type        = string
@@ -65,11 +53,16 @@ variable "launch_type" {
 
 variable "subnets_ids" {
   description = "private subnets ids values"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "cidr_vpc" {
   description = "set the vpc cidr"
-  default = "10.0.0.0/16"
-  type = string
+  default     = "10.0.0.0/16"
+  type        = string
+}
+
+variable "containerport" {
+  description = "set the container port"
+  type        = number
 }

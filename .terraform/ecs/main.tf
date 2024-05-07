@@ -10,8 +10,8 @@ resource "aws_ecs_service" "service" {
   desired_count   = 2
 
   load_balancer {
-    container_name   = local.main_container_name
-    container_port   = local.main_container_port
+    container_name   = "nginxtest"
+    container_port   = var.containerport
     target_group_arn = var.target_group_arn
   }
 
@@ -30,9 +30,23 @@ resource "aws_ecs_task_definition" "task" {
   network_mode             = var.network_mode
   requires_compatibilities = [var.launch_type.type]
   execution_role_arn       = aws_iam_role.task_role.arn
-  container_definitions    = local.container_definitions
-  cpu                      = var.launch_type.cpu
-  memory                   = var.launch_type.memory
+  container_definitions = jsonencode([
+    {
+      name      = "nginxtest"
+      image     = "nginx:latest"
+      cpu       = 256
+      memory    = 512
+      essential = true
+      portMappings = [
+        {
+          containerPort = var.containerport
+          hostPort      = var.containerport
+        }
+      ]
+    }
+  ])
+  cpu    = var.launch_type.cpu
+  memory = var.launch_type.memory
 }
 
 resource "aws_iam_role" "task_role" {
@@ -78,8 +92,8 @@ resource "aws_security_group" "secgrp" {
   vpc_id      = var.vpc_id == null ? aws_default_vpc.default.id : var.vpc_id
 
   ingress {
-    from_port = local.main_container_port
-    to_port   = local.main_container_port
+    from_port = var.containerport
+    to_port   = var.containerport
     protocol  = "tcp"
     cidr_blocks = [var.vpc_id == null ? aws_default_vpc.default.cidr_block
       : var.cidr_vpc
