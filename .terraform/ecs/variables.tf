@@ -1,25 +1,13 @@
 variable "region" {
-  description = "set the project region"
-  default = "us-east-1"
-  type = string
-}
-
-variable "cidr_vpc" {
-  description = "set the vpc cidr"
-  default = "10.0.0.0/16"
-  type = string
-}
-
-variable "projectname" {
-  description = "set the project name"
-  type = string
+  description = "AWS region to create resources in"
+  type        = string
+  default     = "us-east-1"
 }
 
 variable "cluster_name" {
-  description = "set the cluster name"
-  type = string
+  type        = string
+  description = "ECS cluster name"
 }
-
 
 variable "service_name" {
   type        = string
@@ -49,6 +37,12 @@ variable "container_definitions" {
   description = "List of container definition assigned to ecs task"
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "VPC id"
+  default     = null
+}
+
 variable "network_mode" {
   type        = string
   description = "ECS network mode"
@@ -63,8 +57,19 @@ variable "launch_type" {
     memory = number
   })
   default = {
-    type   = "FARGATE"
-    cpu    = 256
-    memory = 512
+    type   = "EC2"
+    cpu    = null
+    memory = null
   }
+}
+
+variable "subnets_ids" {
+  description = "private subnets ids values"
+  type = list(string)
+}
+
+variable "cidr_vpc" {
+  description = "set the vpc cidr"
+  default = "10.0.0.0/16"
+  type = string
 }
